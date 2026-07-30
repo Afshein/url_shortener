@@ -3,3 +3,5 @@
 #### Redis 
 `docker run -p 6379:6379 redis:latest`
 
+#### Server
+`go run ./cmd/web`
