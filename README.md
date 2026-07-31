@@ -4,4 +4,4 @@
 `docker run -p 6379:6379 redis:latest`
 
 #### Server
-`go run ./cmd/web`
+`export $(grep -v '^#' .env | xargs) && go run ./cmd/web -PORT=$PORT`
