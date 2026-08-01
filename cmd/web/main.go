@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"log"
+	"myproject/internal/config"
 	"net/http"
 )
 
@@ -9,7 +11,13 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", home)
 
-	log.Print("Starting server on :4000")
-	err := http.ListenAndServe(":4000", mux)
+	cfg := config.Load_config()
+	flag.Parse()
+
+	log.Printf("Starting server on %s", *cfg.PORT)
+	err := http.ListenAndServe(
+		*cfg.PORT,
+		mux,
+	)
 	log.Fatal(err)
 }
