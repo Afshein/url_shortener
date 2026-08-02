@@ -9,9 +9,9 @@ type Config struct {
 }
 
 func Load_config() Config {
-	cfg := Config{}
-
-	flag.StringVar(cfg.PORT, "PORT", ":4000", "HTTP network address")
+	cfg := Config{
+		PORT: flag.String("PORT", ":4000", "HTTP network address"),
+	}
 
 	return cfg
 }
