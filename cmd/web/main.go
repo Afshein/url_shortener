@@ -8,16 +8,13 @@ import (
 )
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", home)
-
 	cfg := config.Load_config()
 	flag.Parse()
 
 	log.Printf("Starting server on %s", *cfg.PORT)
 	err := http.ListenAndServe(
 		*cfg.PORT,
-		mux,
+		routes(),
 	)
 	log.Fatal(err)
 }

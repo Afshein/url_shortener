@@ -3,7 +3,9 @@ package storage
 import (
 	"context"
 	"crypto/sha256"
-	"fmt"
+	"encoding/binary"
+	"log"
+	"strconv"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -23,9 +25,9 @@ func Url_set(url string) string {
 	return key
 }
 
-func Url_get(hash string) string {
-	url_val, _ := rdb.Get(ctx, hash).Result()
-	return url_val
+func Url_get(hash string) (string, error) {
+	url_val, err := rdb.Get(ctx, hash).Result()
+	return url_val, err
 }
 
 func hash(val string) string {
@@ -33,9 +35,13 @@ func hash(val string) string {
 	h := sha256.New()
 	h.Write([]byte(val))
 	bs := h.Sum(nil)
-	// hash the endpoint
 
-	fmt.Printf("%x\n", bs)
+	// Cast to uint64
+	hash_int := binary.BigEndian.Uint64(bs)
+	// Cast to string
+	hash := strconv.FormatUint(hash_int, 10)
 
-	return string(bs)
+	log.Print(hash)
+
+	return hash
 }
