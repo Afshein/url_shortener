@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    ports:
+    # APP_PORT : CONTAINER_PORT
+      - "${APP_PORT}${PORT}"
+    environment:
+      - PORT={$PORT}
+    command: ["/app/server.exe", "-PORT=${PORT}"]
+
+
+  redis:
+    image: redis:latest
