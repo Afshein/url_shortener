@@ -34,6 +34,7 @@ func longURLPost(w http.ResponseWriter, r *http.Request) {
 
 	if longURL == "" {
 		http.Error(w, "Must pass non empty string for url param", http.StatusBadRequest)
+		return
 	}
 
 	shortUrl := storage.Url_set(longURL)
