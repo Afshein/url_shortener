@@ -12,7 +12,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o server.exe ./cmd/web
 
 
 # Stage 2 — Run (minimal)
-FROM gcr.io/distroless/static-debian12 as runner
+FROM gcr.io/distroless/static-debian12 AS runner
 WORKDIR /app
 COPY --from=builder /app/server.exe . 
 CMD ["./server.exe -PORT=$PORT"]
