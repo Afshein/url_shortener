@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"myproject/internal/model"
 	"net/http"
 	"path"
 )
@@ -10,6 +11,7 @@ func (app *App) shortURLGet(w http.ResponseWriter, r *http.Request) {
 	log.Print("hit GET")
 
 	key := path.Base(r.URL.Path)
+
 	longURL, err := app.urlMapping.GetLongURL(app.context, key)
 
 	if err != nil {
@@ -37,7 +39,18 @@ func (app *App) longURLPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	shortUrl, err := app.urlMapping.CacheLongURL(app.context, longURL)
+	urlMap := model.NewURLMapping(longURL)
+
+	log.Print("Trying to post to persistent storage")
+	err = app.urlMapping.StoreLongURL(app.context, urlMap)
+
+	if err != nil {
+		log.Printf("Failed to store long url %s", err)
+		http.Error(w, "Failed to get shortURL", http.StatusInternalServerError)
+		return
+	}
+
+	err = app.urlMapping.CacheLongURL(app.context, urlMap)
 
 	if err != nil {
 		log.Printf("Failed to cache long url %s", err)
@@ -49,7 +62,7 @@ func (app *App) longURLPost(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(
 		`{
         "status": "ok",
-        "shortUrl": "` + shortUrl + `"
+        "shortUrl": "` + urlMap.ShortURL + `"
     }`,
 	))
 }

@@ -7,36 +7,45 @@ import (
 	"myproject/internal/config"
 	"myproject/internal/model"
 	"net/http"
+	"os"
 
-	"github.com/redis/go-redis/v9"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type App struct {
 	context    context.Context
-	urlMapping model.URLMappingModel
+	urlMapping model.URLMappingRepo
 }
 
 func main() {
 	cfg := config.Load_config()
 	flag.Parse()
 
-	app := App{
-		context: context.Background(),
+	context := context.Background()
+
+	log.Printf("DATABASE_URL: %s", os.Getenv("DATABASE_URL"))
+	pool, err := pgxpool.New(context, os.Getenv("DATABASE_URL"))
+
+	if err != nil {
+		panic("Postgres not reachable: " + err.Error())
 	}
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
-		Password: "", // no password
-		DB:       0,  // use default DB
-		Protocol: 2,
-	})
+	rdb, err := model.OpenCacheDB(context)
 
-	if err := rdb.Ping(app.context).Err(); err != nil {
+	if err != nil {
 		panic("Redis not reachable: " + err.Error())
 	}
 
+	app := App{
+		context: context,
+		urlMapping: model.URLMappingRepo{
+			RDB: rdb,
+			PDB: pool,
+		},
+	}
+
 	log.Printf("Starting server on %s", *cfg.PORT)
-	err := http.ListenAndServe(
+	err = http.ListenAndServe(
 		*cfg.PORT,
 		app.routes(),
 	)

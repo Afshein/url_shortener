@@ -1,32 +1,21 @@
 package model
 
 import (
-	"context"
 	"crypto/sha256"
 	"encoding/binary"
 	"strconv"
-
-	"github.com/redis/go-redis/v9"
 )
 
 type URLMapping struct {
-	longURL  string
-	shortURL string
+	LongURL  string
+	ShortURL string
 }
 
-type URLMappingModel struct {
-	rdb *redis.Client
-}
-
-func (m *URLMappingModel) CacheLongURL(ctx context.Context, longURL string) (string, error) {
-	key := hash(longURL)
-	err := m.rdb.Set(ctx, key, longURL, 0).Err()
-	return key, err
-}
-
-func (m *URLMappingModel) GetLongURL(ctx context.Context, hash string) (string, error) {
-	longURL, err := m.rdb.Get(ctx, hash).Result()
-	return longURL, err
+func NewURLMapping(longURL string) URLMapping {
+	return URLMapping{
+		LongURL:  longURL,
+		ShortURL: hash(longURL),
+	}
 }
 
 func hash(val string) string {
