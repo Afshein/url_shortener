@@ -8,10 +8,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func routes() http.Handler {
+func (app *App) routes() http.Handler {
 	router := httprouter.New()
-	router.HandlerFunc(http.MethodGet, "/shorten", shortURLGet)
-	router.HandlerFunc(http.MethodPost, "/", longURLPost)
+	router.HandlerFunc(http.MethodGet, "/shorten", app.shortURLGet)
+	router.HandlerFunc(http.MethodPost, "/", app.longURLPost)
 
 	// Custom fallback
 	router.NotFound = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
