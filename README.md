@@ -16,4 +16,4 @@
 `curl http://localhost:4000/shorten/12424224562945606824`
 
 ### POSTGRES how to get into container
-docker exec -it 3a2520165ecc psql -h localhost -U user url_map_db
+`docker exec -it <container_id> psql -h localhost -U user url_map_db`

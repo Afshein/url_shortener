@@ -6,7 +6,7 @@ services:
       - "${APP_PORT}${PORT}"
     environment:
       - PORT={$PORT}
-      - DATABASE_URL={$DATABASE_URL}
+      - DATABASE_URL=$DATABASE_URL
     command: ["/app/server.exe", "-PORT=${PORT}"]
 
 
@@ -16,7 +16,7 @@ services:
       - "6379:6379"
 
   postgres:
-    image: postgres:latest
+    image: postgres:18
     ports: 
       - "5432:5432" 
     environment:
@@ -24,4 +24,7 @@ services:
       - POSTGRES_PASSWORD=pass
       - POSTGRES_DB=url_map_db
     volumes:
-      - "/home/projects/url_shortener/storage"
+      - "db_data:/var/lib/postgresql"
+  
+volumes:
+  db_data:
